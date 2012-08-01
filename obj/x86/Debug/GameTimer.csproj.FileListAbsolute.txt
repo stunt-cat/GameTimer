@@ -1,0 +1,8 @@
+D:\PROGRAMMING\C sharp\GameTimer\bin\Debug\GameTimer.exe
+D:\PROGRAMMING\C sharp\GameTimer\bin\Debug\GameTimer.pdb
+D:\PROGRAMMING\C sharp\GameTimer\obj\x86\Debug\ResolveAssemblyReference.cache
+D:\PROGRAMMING\C sharp\GameTimer\obj\x86\Debug\GameTimer.exe
+D:\PROGRAMMING\C sharp\GameTimer\obj\x86\Debug\GameTimer.pdb
+D:\PROGRAMMING\C sharp\GameTimer\obj\x86\Debug\GameTimer.MainForm.resources
+D:\PROGRAMMING\C sharp\GameTimer\obj\x86\Debug\GenerateResource.read.1.tlog
+D:\PROGRAMMING\C sharp\GameTimer\obj\x86\Debug\GenerateResource.write.1.tlog
