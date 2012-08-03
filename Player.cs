@@ -20,6 +20,7 @@ namespace GameTimer
 		public int minsLeft;
 		public int secsLeft;
 		public int tenthsLeft;
+		public Boolean knockedOut = false;
 		
 		public Player(int hoursLeft, int minsLeft, int secsLeft)
 		{
