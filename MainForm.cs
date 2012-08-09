@@ -27,14 +27,13 @@ namespace GameTimer
 			
 			// Make new event handler for timer Tick event
 			timer.Tick += new EventHandler(timer_Tick);
-			
 		}
 		
 		Boolean pause = false; // Used to determine whether 'pause' button has been activated or not
 		int numberOfPlayers;
 		
-		// List is populated in ButtonStartClick(), from user parameters
-		public List<Player> players;
+		// playersRemaining is populated in ButtonStartClick(), from user parameters.
+		public List<Player> players = new List<Player>();
 		Player activePlayer;
 		
 		// N.B. Only player 1 text box and label is visible to begin with
@@ -79,15 +78,16 @@ namespace GameTimer
 		// Gets user input values and starts initial player clock
 		void ButtonStartClick(object sender, System.EventArgs e)
 		{
-			// Hide setup panel
+			if(numericUpDownH.Value == 0 && numericUpDownM.Value == 0 && numericUpDownS.Value == 0){
+				buttonZeroInitialTime.Visible = true;
+			} else {
+			
+				// Hide setup panel
 			groupBoxSetup.Visible = false;
 			groupBoxActive.Visible = true;
 			
-			// Create List<Player> to correct size defined by user.
+			// Set max value of NumericUpDownStartPlayer and reveal correct number of Player Name entry areas
 			numberOfPlayers = (int)numericUpDownPlayers.Value;
-			players = new List<Player> (numberOfPlayers);
-			
-			// Set max value of NumericUpDownStartValue and reveal correct number of Player Name entry areas
 			numericUpDownStartPlayer.Maximum = (decimal)numberOfPlayers;
 			
 			// Populate List<Player> according to user specified number of players, using user specified initial time
@@ -95,28 +95,34 @@ namespace GameTimer
 				players.Add(new Player((int)numericUpDownH.Value, (int)numericUpDownM.Value, (int)numericUpDownS.Value));
 			}
 			
-			// Setup active panel to display player names (or assign standard names if none are entered) and remaining time
+			// Setup active panel to display player names (or assign standard names if none are entered) and remaining time.
+			// Also give each player a reference to their labelPxTimeLeft
 			switch (numberOfPlayers){
-					case 1 : if(textBoxP1.Text == "") players[0].name = "Player 1";
+				case 1 : if(textBoxP1.Text == "") players[0].name = "Player 1";
 						else players[0].name = textBoxP1.Text;
-						labelP1TimeLeft.Text = DisplayTimeLeft(players[0]);
 						labelP1Timer.Text = players[0].name;
-						break;
+						players[0].timeLeftLabel = labelP1TimeLeft;
+						goto default;
 				case 2 : if(textBoxP2.Text == "") players[1].name = "Player 2";
 						else players[1].name = textBoxP2.Text;
-						labelP2TimeLeft.Text = DisplayTimeLeft(players[1]);
 						labelP2Timer.Text = players[1].name;
+						players[1].timeLeftLabel = labelP2TimeLeft;
 						goto case 1;
 				case 3 : if(textBoxP3.Text == "") players[2].name = "Player 3";
 						else players[2].name = textBoxP3.Text;
-						labelP3TimeLeft.Text = DisplayTimeLeft(players[2]);
 						labelP3Timer.Text = players[2].name;
+						players[2].timeLeftLabel = labelP3TimeLeft;
 						goto case 2;
 				case 4 : if(textBoxP4.Text == "") players[3].name = "Player 4";
 						else players[3].name = textBoxP4.Text;
-						labelP4TimeLeft.Text = DisplayTimeLeft(players[3]);
 						labelP4Timer.Text = players[3].name;
+						players[3].timeLeftLabel = labelP4TimeLeft;
 						goto case 3;
+				default:
+						for(int i=0; i<numberOfPlayers; i++){
+							players[i].timeLeftLabel.Text = DisplayTimeLeft(players[i]);
+						}
+						break;
 			}
 			
 			// Make non-existant player data invisible in active panel
@@ -139,35 +145,18 @@ namespace GameTimer
 				case 4: break;
 			}
 			
-			// Set active player
+			// Set active player and assign correct colours to labelPxTimeLeft
 			activePlayer = players[(int)numericUpDownStartPlayer.Value - 1];
-			
-			// Highlight active player
-			switch((int)numericUpDownStartPlayer.Value){
-				case 1:	labelP1TimeLeft.BackColor = SystemColors.ControlLightLight;
-						labelP2TimeLeft.BackColor = SystemColors.Control;
-						labelP3TimeLeft.BackColor = SystemColors.Control;
-						labelP4TimeLeft.BackColor = SystemColors.Control;
-						break;
-				case 2:	labelP1TimeLeft.BackColor = SystemColors.Control;
-						labelP2TimeLeft.BackColor = SystemColors.ControlLightLight;
-						labelP3TimeLeft.BackColor = SystemColors.Control;
-						labelP4TimeLeft.BackColor = SystemColors.Control;
-						break;
-				case 3:	labelP1TimeLeft.BackColor = SystemColors.Control;
-						labelP2TimeLeft.BackColor = SystemColors.Control;
-						labelP3TimeLeft.BackColor = SystemColors.ControlLightLight;
-						labelP4TimeLeft.BackColor = SystemColors.Control;
-						break;
-				case 4:	labelP1TimeLeft.BackColor = SystemColors.Control;
-						labelP2TimeLeft.BackColor = SystemColors.Control;
-						labelP3TimeLeft.BackColor = SystemColors.Control;
-						labelP4TimeLeft.BackColor = SystemColors.ControlLightLight;
-						break;
-			}
+			ColourIn();
 			
 			// Begin timer
 			timer.Start();
+			}
+		}
+		
+		void ButtonZeroInitialTimeClick(object sender, EventArgs e)
+		{
+			buttonZeroInitialTime.Visible = false;
 		}
 		
 		string DisplayTimeLeft(Player player){
@@ -179,11 +168,11 @@ namespace GameTimer
 		}
 		
 		void DecrementTimer(Player player){
+			// When a players' time runs out, show message, highlight player time red, switch to next player.
 			if(player.hoursLeft == 0 && player.minsLeft == 0 && player.secsLeft == 1 && player.tenthsLeft == 1){
-				timer.Stop();
-				buttonTimerUp.Text = string.Format("{0} is out of time!",activePlayer.name);
-				buttonTimerUp.Visible = true;
-				buttonExit.Visible = false;
+				player.secsLeft--;
+				player.active = false;
+				PlayerTimeUpStatus(player);
 			} else {
 				if(player.tenthsLeft>0){
 				   	player.tenthsLeft--;
@@ -204,84 +193,89 @@ namespace GameTimer
 					player.tenthsLeft = 9;
 				}
 			}
-			
-			if (player == players[0]) labelP1TimeLeft.Text = DisplayTimeLeft(players[0]);
-			else if(player == players[1]) labelP2TimeLeft.Text = DisplayTimeLeft(players[1]);
-			else if(player == players[2]) labelP3TimeLeft.Text = DisplayTimeLeft(players[2]);
-			else if(player == players[3]) labelP4TimeLeft.Text = DisplayTimeLeft(players[3]);
+			for(int i=0; i<numberOfPlayers; i++){
+				players[i].timeLeftLabel.Text = DisplayTimeLeft(players[i]);
+			}
 			return;
 		}
+		
+		void PlayerTimeUpStatus(Player knockedOut){
+			// If everyone is out of time end timer.
+			Boolean someoneLeft = false;
+			foreach(Player checkMe in players){
+				if(checkMe.active){
+					someoneLeft = true;
+				}
+			}
+			if(someoneLeft){
+				buttonTimerUp.Text = string.Format("{0} is out of time!",knockedOut.name);
+				SwitchPlayer();
+				buttonTimerUp.Visible = true;
+			} else {
+				buttonTimerUp.Visible = false;
+				buttonAllTimersUp.Visible = true;
+			}
+		}
 
+		// Selects next player in play order who is still active
+		void SwitchPlayer(){
+			List<Player> playOrder = new List<Player>();
+			
+			// Populate playOrder with all players in the order they will play (regardless of if they are active or not)
+			// Add all players after activePlayer
+			for(int i=players.IndexOf(activePlayer)+1; i<players.Count; i++){
+				playOrder.Add(players[i]);
+			}
+			// Append all players before and including activePlayer
+			for(int i=0; i<players.IndexOf(activePlayer); i++){
+				playOrder.Add(players[i]);
+			}
+			
+			// Choose next Player in playOrder who is active to be activePlayer
+			foreach(Player checkMe in playOrder){
+				if(checkMe.active){
+					activePlayer = checkMe;
+					break;
+				}
+			}
+			
+			ColourIn();
+		}
+		
+		void ColourIn(){
+			// Sets background colours for all
+			// Colour of activeplayer to ControlLightLight
+			// Colour of other active players to Control
+			// Colour of other non-active players to Control.Dark
+		
+			foreach(Player player in players){
+				if(!player.active){
+					player.timeLeftLabel.BackColor = SystemColors.ControlDark;
+				} else player.timeLeftLabel.BackColor = SystemColors.Control;
+				
+				// Set background colour of active player
+				if(player == activePlayer){
+					player.timeLeftLabel.BackColor = SystemColors.ControlLightLight;
+				}
+			}
+		}
 		
 		void ButtonSwitchPlayerClick(object sender, EventArgs e)
 		{
-			switch(numberOfPlayers){
-				case 1: break;
-	
-				case 2:	if (activePlayer == players[1]){
-							activePlayer = players[0];
-							labelP1TimeLeft.BackColor = SystemColors.ControlLightLight;
-							labelP2TimeLeft.BackColor = SystemColors.Control;
-						} else {
-							activePlayer = players[1];
-							labelP1TimeLeft.BackColor = SystemColors.Control;
-							labelP2TimeLeft.BackColor = SystemColors.ControlLightLight;
-						}
-						break;
-						
-				case 3:	if (activePlayer == players[0]){
-							activePlayer = players[1];
-							labelP1TimeLeft.BackColor = SystemColors.Control;
-							labelP2TimeLeft.BackColor = SystemColors.ControlLightLight;
-							labelP3TimeLeft.BackColor = SystemColors.Control;
-						} else if(activePlayer == players[1]){
-							activePlayer = players[2];
-							labelP1TimeLeft.BackColor = SystemColors.Control;
-							labelP2TimeLeft.BackColor = SystemColors.Control;
-							labelP3TimeLeft.BackColor = SystemColors.ControlLightLight;
-						} else {
-							activePlayer = players[0];
-							labelP1TimeLeft.BackColor = SystemColors.ControlLightLight;
-							labelP2TimeLeft.BackColor = SystemColors.Control;
-							labelP3TimeLeft.BackColor = SystemColors.Control;
-						}
-						break;
-						
-				case 4:	if (activePlayer == players[0]){
-							activePlayer = players[1];
-							labelP1TimeLeft.BackColor = SystemColors.Control;
-							labelP2TimeLeft.BackColor = SystemColors.ControlLightLight;
-							labelP3TimeLeft.BackColor = SystemColors.Control;
-							labelP4TimeLeft.BackColor = SystemColors.Control;
-						} else if(activePlayer == players[1]){
-							activePlayer = players[2];
-							labelP1TimeLeft.BackColor = SystemColors.Control;
-							labelP2TimeLeft.BackColor = SystemColors.Control;
-							labelP3TimeLeft.BackColor = SystemColors.ControlLightLight;
-							labelP4TimeLeft.BackColor = SystemColors.Control;
-						} else if(activePlayer == players[2]){
-							activePlayer = players[3];
-							labelP1TimeLeft.BackColor = SystemColors.Control;
-							labelP2TimeLeft.BackColor = SystemColors.Control;
-							labelP3TimeLeft.BackColor = SystemColors.Control;
-							labelP4TimeLeft.BackColor = SystemColors.ControlLightLight;
-						} else {
-							activePlayer = players[0];
-							labelP1TimeLeft.BackColor = SystemColors.ControlLightLight;
-							labelP2TimeLeft.BackColor = SystemColors.Control;
-							labelP3TimeLeft.BackColor = SystemColors.Control;
-							labelP4TimeLeft.BackColor = SystemColors.Control;
-						}
-						break;
-			}
+			SwitchPlayer();
 		}
 			
 		void ButtonTimerUpClick(object sender, EventArgs e)
 		{
 			buttonTimerUp.Visible = false;
-			groupBoxActive.Visible = false;
-			buttonExit.Visible = true;
-			groupBoxSetup.Visible = true;
+		}
+		
+		// 
+		void ButtonAllTimersUpClick(object sender, EventArgs e)
+		{
+			buttonTimerUp.Visible = false;
+			buttonAllTimersUp.Visible = false;
+			Reset();
 		}
 		
 		void ButtonPauseClick(object sender, EventArgs e)
@@ -301,6 +295,15 @@ namespace GameTimer
 		
 		void ButtonExitClick(object sender, EventArgs e)
 		{
+			Reset();
+		}
+		
+		void Reset(){
+			timer.Stop();
+			players.Clear();
+			groupBoxActive.Visible = false;
+			groupBoxSetup.Visible = true;
+			
 			// Make all contents of groupBoxActive visible again ready for next selection and back to normal colour
 			labelP2Timer.Visible = true;
 			labelP3Timer.Visible = true;
@@ -308,14 +311,6 @@ namespace GameTimer
 			labelP2TimeLeft.Visible = true;
 			labelP3TimeLeft.Visible = true;
 			labelP4TimeLeft.Visible = true;
-			labelP1TimeLeft.BackColor = SystemColors.Control;
-			labelP2TimeLeft.BackColor = SystemColors.Control;
-			labelP3TimeLeft.BackColor = SystemColors.Control;
-			labelP4TimeLeft.BackColor = SystemColors.Control;
-			
-			groupBoxActive.Visible = false;
-			groupBoxSetup.Visible = true;
 		}
-	
 	}
 }

@@ -47,6 +47,7 @@ namespace GameTimer
 			this.labelHour = new System.Windows.Forms.Label();
 			this.labelTime = new System.Windows.Forms.Label();
 			this.groupBoxSetup = new System.Windows.Forms.GroupBox();
+			this.buttonZeroInitialTime = new System.Windows.Forms.Button();
 			this.textBoxP4 = new System.Windows.Forms.TextBox();
 			this.numericUpDownStartPlayer = new System.Windows.Forms.NumericUpDown();
 			this.numericUpDownPlayers = new System.Windows.Forms.NumericUpDown();
@@ -59,6 +60,7 @@ namespace GameTimer
 			this.textBoxP2 = new System.Windows.Forms.TextBox();
 			this.labelP2Name = new System.Windows.Forms.Label();
 			this.groupBoxActive = new System.Windows.Forms.GroupBox();
+			this.buttonAllTimersUp = new System.Windows.Forms.Button();
 			this.buttonTimerUp = new System.Windows.Forms.Button();
 			this.labelP4TimeLeft = new System.Windows.Forms.Label();
 			this.labelP4Timer = new System.Windows.Forms.Label();
@@ -175,6 +177,7 @@ namespace GameTimer
 			// 
 			// groupBoxSetup
 			// 
+			this.groupBoxSetup.Controls.Add(this.buttonZeroInitialTime);
 			this.groupBoxSetup.Controls.Add(this.textBoxP4);
 			this.groupBoxSetup.Controls.Add(this.numericUpDownStartPlayer);
 			this.groupBoxSetup.Controls.Add(this.numericUpDownPlayers);
@@ -201,6 +204,18 @@ namespace GameTimer
 			this.groupBoxSetup.TabIndex = 0;
 			this.groupBoxSetup.TabStop = false;
 			this.groupBoxSetup.Text = "Setup";
+			// 
+			// buttonZeroInitialTime
+			// 
+			this.buttonZeroInitialTime.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.buttonZeroInitialTime.Location = new System.Drawing.Point(35, 236);
+			this.buttonZeroInitialTime.Name = "buttonZeroInitialTime";
+			this.buttonZeroInitialTime.Size = new System.Drawing.Size(245, 79);
+			this.buttonZeroInitialTime.TabIndex = 21;
+			this.buttonZeroInitialTime.Text = "Time must be greater than zero!\r\n\r\nClick to reset.";
+			this.buttonZeroInitialTime.UseVisualStyleBackColor = true;
+			this.buttonZeroInitialTime.Visible = false;
+			this.buttonZeroInitialTime.Click += new System.EventHandler(this.ButtonZeroInitialTimeClick);
 			// 
 			// textBoxP4
 			// 
@@ -335,6 +350,7 @@ namespace GameTimer
 			// 
 			// groupBoxActive
 			// 
+			this.groupBoxActive.Controls.Add(this.buttonAllTimersUp);
 			this.groupBoxActive.Controls.Add(this.buttonTimerUp);
 			this.groupBoxActive.Controls.Add(this.labelP4TimeLeft);
 			this.groupBoxActive.Controls.Add(this.labelP4Timer);
@@ -355,13 +371,24 @@ namespace GameTimer
 			this.groupBoxActive.Text = "Active";
 			this.groupBoxActive.Visible = false;
 			// 
+			// buttonAllTimersUp
+			// 
+			this.buttonAllTimersUp.Location = new System.Drawing.Point(7, 192);
+			this.buttonAllTimersUp.Name = "buttonAllTimersUp";
+			this.buttonAllTimersUp.Size = new System.Drawing.Size(295, 181);
+			this.buttonAllTimersUp.TabIndex = 28;
+			this.buttonAllTimersUp.Text = "Everyone is out of time!\r\n\r\nClick to reset.";
+			this.buttonAllTimersUp.UseVisualStyleBackColor = true;
+			this.buttonAllTimersUp.Visible = false;
+			this.buttonAllTimersUp.Click += new System.EventHandler(this.ButtonAllTimersUpClick);
+			// 
 			// buttonTimerUp
 			// 
-			this.buttonTimerUp.Location = new System.Drawing.Point(6, 198);
+			this.buttonTimerUp.Location = new System.Drawing.Point(7, 192);
 			this.buttonTimerUp.Name = "buttonTimerUp";
 			this.buttonTimerUp.Size = new System.Drawing.Size(295, 181);
 			this.buttonTimerUp.TabIndex = 22;
-			this.buttonTimerUp.Text = "END";
+			this.buttonTimerUp.Text = "(someone knocked out)";
 			this.buttonTimerUp.UseVisualStyleBackColor = true;
 			this.buttonTimerUp.Visible = false;
 			this.buttonTimerUp.Click += new System.EventHandler(this.ButtonTimerUpClick);
@@ -405,7 +432,7 @@ namespace GameTimer
 			// buttonExit
 			// 
 			this.buttonExit.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.buttonExit.Location = new System.Drawing.Point(181, 300);
+			this.buttonExit.Location = new System.Drawing.Point(181, 309);
 			this.buttonExit.Name = "buttonExit";
 			this.buttonExit.Size = new System.Drawing.Size(102, 57);
 			this.buttonExit.TabIndex = 23;
@@ -416,7 +443,7 @@ namespace GameTimer
 			// buttonPause
 			// 
 			this.buttonPause.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.buttonPause.Location = new System.Drawing.Point(16, 300);
+			this.buttonPause.Location = new System.Drawing.Point(16, 309);
 			this.buttonPause.Name = "buttonPause";
 			this.buttonPause.Size = new System.Drawing.Size(102, 57);
 			this.buttonPause.TabIndex = 21;
@@ -427,7 +454,7 @@ namespace GameTimer
 			// buttonSwitchPlayer
 			// 
 			this.buttonSwitchPlayer.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.buttonSwitchPlayer.Location = new System.Drawing.Point(32, 202);
+			this.buttonSwitchPlayer.Location = new System.Drawing.Point(35, 216);
 			this.buttonSwitchPlayer.Name = "buttonSwitchPlayer";
 			this.buttonSwitchPlayer.Size = new System.Drawing.Size(231, 75);
 			this.buttonSwitchPlayer.TabIndex = 20;
@@ -491,6 +518,8 @@ namespace GameTimer
 			this.groupBoxActive.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
+		private System.Windows.Forms.Button buttonZeroInitialTime;
+		private System.Windows.Forms.Button buttonAllTimersUp;
 		private System.Windows.Forms.Label labelP3Timer;
 		private System.Windows.Forms.Label labelP3TimeLeft;
 		private System.Windows.Forms.Label labelP4Timer;

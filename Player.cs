@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Windows.Forms;
 
 namespace GameTimer
 {
@@ -20,7 +21,10 @@ namespace GameTimer
 		public int minsLeft;
 		public int secsLeft;
 		public int tenthsLeft;
-		public Boolean knockedOut = false;
+		public Boolean active = true;
+		
+		// timeLeftLabel is reference to labelPxTimeLeft of MainForm
+		public Label timeLeftLabel;
 		
 		public Player(int hoursLeft, int minsLeft, int secsLeft)
 		{
