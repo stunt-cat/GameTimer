@@ -160,7 +160,7 @@ namespace GameTimer
 		}
 		
 		string DisplayTimeLeft(Player player){
-			return string.Format("{0}:{1}:{2}",player.hoursLeft.ToString("00"), player.minsLeft.ToString("00"), player.secsLeft.ToString("00"));
+			return player.timeRemaining.ToString();
 		}
 		
 		void timer_Tick(Object myObject, EventArgs myEventArgs){
@@ -169,30 +169,15 @@ namespace GameTimer
 		
 		void DecrementTimer(Player player){
 			// When a players' time runs out, show message, highlight player time red, switch to next player.
-			if(player.hoursLeft == 0 && player.minsLeft == 0 && player.secsLeft == 1 && player.tenthsLeft == 1){
-				player.secsLeft--;
+			// Otherwise decrement player time remaining.
+			TimeSpan decrement = new TimeSpan(1000000);
+			if(player.timeRemaining.Ticks == 0){
 				player.active = false;
 				PlayerTimeUpStatus(player);
 			} else {
-				if(player.tenthsLeft>0){
-				   	player.tenthsLeft--;
-				   }
-				else if(player.secsLeft>0) {
-					player.secsLeft--;
-					player.tenthsLeft = 9;
-				}
-				else if(player.minsLeft > 0){
-					player.minsLeft--;
-					player.secsLeft = 59;
-					player.tenthsLeft = 9;
-				}
-				else if(player.hoursLeft > 0){
-					player.hoursLeft--;
-					player.minsLeft = 59;
-					player.secsLeft = 59;
-					player.tenthsLeft = 9;
-				}
+				player.timeRemaining = player.timeRemaining.Subtract(decrement);
 			}
+		
 			for(int i=0; i<numberOfPlayers; i++){
 				players[i].timeLeftLabel.Text = DisplayTimeLeft(players[i]);
 			}
